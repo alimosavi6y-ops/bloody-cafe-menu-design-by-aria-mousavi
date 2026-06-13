@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLOODY — CAFE & BAR</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #030000;
+  --deep: #0d0000;
+  --blood: #8B0000;
+  --crimson: #C41E3A;
+  --scarlet: #FF1A35;
+  --bone: #E8D5C4;
+  --ash: #9A7070;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--void);
+  color: var(--bone);
+  font-family: 'Raleway', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CURSOR */
+#cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--scarlet); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease;
+  mix-blend-mode: screen;
+}
+#cursor-ring {
+  position: fixed; width: 32px; height: 32px;
+  border: 1px solid rgba(196, 30, 58, 0.5);
+  border-radius: 50%; pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: left 0.12s ease, top 0.12s ease, transform 0.2s ease;
+}
+a:hover ~ #cursor, button:hover ~ #cursor { transform: translate(-50%,-50%) scale(2.5); }
+
+/* CANVAS */
+#webgl {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%; z-index: 0;
+}
+
+/* CONTENT */
+.site { position: relative; z-index: 10; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 22px 64px;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: all 0.5s ease;
+}
+nav.scrolled {
+  background: rgba(3,0,0,0.92);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(139,0,0,0.35);
+  padding: 14px 64px;
+}
+.nav-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.7rem; font-weight: 900;
+  color: var(--crimson); letter-spacing: 5px;
+  text-decoration: none;
+  text-shadow: 0 0 30px rgba(196,30,58,0.5);
+  filter: drop-shadow(0 0 8px rgba(196,30,58,0.3));
+}
+.nav-links { display: flex; gap: 44px; list-style: none; }
+.nav-links a {
+  font-family: 'Cinzel', serif; font-size: 0.68rem;
+  letter-spacing: 3.5px; color: var(--bone); opacity: 0.65;
+  text-decoration: none; text-transform: uppercase;
+  transition: all 0.3s ease; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -5px; left: 0; right: 0;
+  height: 1px; background: var(--crimson);
+  transform: scaleX(0); transform-origin: center;
+  transition: transform 0.35s ease;
+}
+.nav-links a:hover { opacity: 1; color: #fff; }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+/* HERO */
+#hero {
+  height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+  position: relative;
+}
+.hero-eyebrow {
+  font-family: 'Cinzel', serif; font-size: 0.65rem;
+  letter-spacing: 9px; color: var(--crimson);
+  text-transform: uppercase; margin-bottom: 22px;
+  opacity: 0; animation: riseUp 1s ease 0.6s forwards;
+}
+.hero-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(5rem, 16vw, 15rem);
+  font-weight: 900; line-height: 0.9;
+  background: linear-gradient(150deg, #FF3050 0%, #C41E3A 35%, #8B0000 65%, #3B0000 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 40px rgba(196,30,58,0.4));
+  opacity: 0; animation: riseUp 1.4s ease 0.9s forwards;
+}
+.hero-sub {
+  font-family: 'Cinzel', serif; font-size: 0.85rem;
+  letter-spacing: 12px; color: var(--ash);
+  text-transform: uppercase; margin-top: 14px;
+  opacity: 0; animation: riseUp 1s ease 1.3s forwards;
+}
+.hero-line {
+  width: 1px; height: 60px; background: linear-gradient(to bottom, transparent, var(--crimson), transparent);
+  margin: 28px auto;
+  opacity: 0; animation: fadeIn 1s ease 1.6s forwards;
+}
+.hero-tagline {
+  font-size: 0.95rem; font-weight: 300; font-style: italic;
+  color: rgba(232,213,196,0.45); letter-spacing: 2px;
+  max-width: 420px; line-height: 2;
+  opacity: 0; animation: riseUp 1s ease 1.8s forwards;
+}
+.hero-cta {
+  margin-top: 46px; display: flex; gap: 20px; align-items: center;
+  opacity: 0; animation: riseUp 1s ease 2.1s forwards;
+}
+.btn {
+  font-family: 'Cinzel', serif; font-size: 0.68rem;
+  letter-spacing: 4px; text-transform: uppercase;
+  padding: 16px 42px; text-decoration: none; cursor: pointer;
+  position: relative; overflow: hidden; border: none; outline: none;
+}
+.btn-primary {
+  color: var(--bone); background: transparent;
+  border: 1px solid var(--crimson);
+  transition: color 0.4s ease;
+}
+.btn-primary::before {
+  content: ''; position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, var(--crimson), var(--blood));
+  transition: left 0.4s ease; z-index: -1;
+}
+.btn-primary:hover { color: #fff; }
+.btn-primary:hover::before { left: 0; }
+.btn-ghost {
+  color: rgba(232,213,196,0.4); background: transparent;
+  border: none; transition: color 0.3s ease;
+}
+.btn-ghost:hover { color: var(--bone); }
+
+.scroll-cue {
+  position: absolute; bottom: 36px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  opacity: 0; animation: fadeIn 1s ease 2.8s forwards;
+}
+.scroll-cue-bar {
+  width: 1px; height: 52px;
+  background: linear-gradient(to bottom, transparent, var(--crimson));
+  animation: scrollPulse 2.2s ease-in-out infinite;
+}
+.scroll-cue span {
+  font-family: 'Cinzel', serif; font-size: 0.5rem;
+  letter-spacing: 5px; color: var(--crimson); text-transform: uppercase;
+}
+
+/* SECTION BASE */
+.section-glass {
+  background: rgba(3,0,0,0.72);
+  backdrop-filter: blur(22px);
+  border-top: 1px solid rgba(139,0,0,0.2);
+  border-bottom: 1px solid rgba(139,0,0,0.2);
+}
+.inner {
+  max-width: 1180px; margin: 0 auto;
+  padding: 110px 64px;
+}
+.section-label {
+  display: block; font-family: 'Cinzel', serif;
+  font-size: 0.6rem; letter-spacing: 9px;
+  color: var(--crimson); text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 700; color: var(--bone);
+  line-height: 1.1; margin-bottom: 24px;
+}
+.rule {
+  width: 56px; height: 2px;
+  background: linear-gradient(90deg, var(--crimson), transparent);
+  margin-bottom: 48px;
+}
+
+/* MENU */
+.menu-header { text-align: center; margin-bottom: 72px; }
+.menu-header .rule { margin: 0 auto 20px; background: linear-gradient(90deg, transparent, var(--crimson), transparent); width: 120px; }
+.menu-header p {
+  color: var(--ash); font-size: 0.9rem; font-weight: 300;
+  letter-spacing: 1.5px; line-height: 1.9; max-width: 480px; margin: 0 auto;
+}
+.menu-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: rgba(139,0,0,0.1);
+}
+.menu-card {
+  background: rgba(8,0,0,0.7);
+  border: 1px solid rgba(139,0,0,0.1);
+  padding: 42px 34px;
+  position: relative; overflow: hidden;
+  transition: all 0.45s ease;
+  cursor: default;
+}
+.menu-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+  transform: scaleX(0); transform-origin: center;
+  transition: transform 0.5s ease;
+}
+.menu-card::after {
+  content: ''; position: absolute;
+  bottom: 0; left: 0; right: 0; top: 0;
+  background: linear-gradient(135deg, rgba(196,30,58,0.04), transparent);
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.menu-card:hover {
+  background: rgba(18,0,0,0.85);
+  transform: translateY(-6px);
+  border-color: rgba(196,30,58,0.25);
+  box-shadow: 0 20px 60px rgba(139,0,0,0.15);
+}
+.menu-card:hover::before { transform: scaleX(1); }
+.menu-card:hover::after { opacity: 1; }
+.menu-icon { font-size: 2.2rem; margin-bottom: 22px; display: block; }
+.menu-badge {
+  position: absolute; top: 22px; right: 22px;
+  font-family: 'Cinzel', serif; font-size: 0.5rem;
+  letter-spacing: 2.5px; color: var(--crimson);
+  border: 1px solid rgba(196,30,58,0.5); padding: 4px 10px;
+  text-transform: uppercase;
+}
+.menu-name {
+  font-family: 'Cinzel', serif; font-size: 0.95rem;
+  font-weight: 600; color: var(--bone); letter-spacing: 2px; margin-bottom: 12px;
+}
+.menu-desc {
+  font-size: 0.82rem; font-weight: 300; color: var(--ash);
+  line-height: 1.8; margin-bottom: 24px; direction: rtl; text-align: right;
+}
+.menu-price {
+  font-family: 'Cinzel', serif; font-size: 1.1rem;
+  color: var(--crimson); font-weight: 700; letter-spacing: 1px;
+}
+.menu-price span { font-size: 0.7rem; color: var(--ash); margin-right: 4px; }
+
+/* ABOUT */
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 90px; align-items: center;
+}
+.about-text p {
+  font-size: 0.9rem; font-weight: 300;
+  color: rgba(232,213,196,0.7); line-height: 2.1;
+  margin-bottom: 22px; direction: rtl; text-align: right;
+}
+.about-stats {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 0;
+  margin-top: 52px; padding-top: 40px;
+  border-top: 1px solid rgba(139,0,0,0.2);
+}
+.stat { text-align: center; padding: 10px 0; }
+.stat + .stat { border-left: 1px solid rgba(139,0,0,0.15); }
+.stat-num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2.6rem; font-weight: 900; color: var(--crimson); display: block;
+  filter: drop-shadow(0 0 12px rgba(196,30,58,0.3));
+}
+.stat-lbl {
+  font-size: 0.6rem; letter-spacing: 3.5px;
+  color: var(--ash); text-transform: uppercase;
+  display: block; margin-top: 6px;
+}
+.about-visual {
+  height: 520px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.about-frame {
+  width: 100%; height: 100%;
+  border: 1px solid rgba(196,30,58,0.15);
+  position: relative; display: flex;
+  align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.corner {
+  position: absolute; width: 44px; height: 44px;
+  border-color: var(--crimson); border-style: solid;
+}
+.corner.tl { top: 18px; left: 18px; border-width: 2px 0 0 2px; }
+.corner.tr { top: 18px; right: 18px; border-width: 2px 2px 0 0; }
+.corner.bl { bottom: 18px; left: 18px; border-width: 0 0 2px 2px; }
+.corner.br { bottom: 18px; right: 18px; border-width: 0 2px 2px 0; }
+.about-bg-text {
+  position: absolute; font-family: 'Cinzel Decorative', serif;
+  font-size: 7rem; font-weight: 900;
+  color: rgba(139,0,0,0.06); line-height: 1;
+  user-select: none; text-align: center;
+  white-space: nowrap;
+}
+.about-quote {
+  font-size: 1.05rem; font-weight: 300; font-style: italic;
+  color: rgba(232,213,196,0.6); line-height: 1.9;
+  text-align: center; max-width: 280px; position: relative; z-index: 1;
+  padding: 30px 30px 30px 36px;
+  border-left: 2px solid var(--crimson);
+  direction: rtl; text-align: right;
+}
+.about-quote::before {
+  content: '\201C';
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 7rem; color: rgba(196,30,58,0.12);
+  position: absolute; top: -30px; right: -10px;
+  line-height: 1; z-index: -1;
+}
+
+/* RESERVATION */
+.res-intro { text-align: center; margin-bottom: 64px; }
+.res-intro .rule { margin: 0 auto; }
+.res-form { max-width: 580px; margin: 0 auto; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-field { margin-bottom: 14px; }
+.form-input {
+  width: 100%;
+  background: rgba(8,0,0,0.65);
+  border: 1px solid rgba(139,0,0,0.2);
+  color: var(--bone); padding: 16px 20px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.82rem; letter-spacing: 1.5px;
+  outline: none; transition: border-color 0.3s ease, background 0.3s ease;
+  -webkit-appearance: none; appearance: none;
+  border-radius: 0;
+}
+.form-input:focus {
+  border-color: var(--crimson);
+  background: rgba(20,0,0,0.8);
+  box-shadow: 0 0 0 1px rgba(196,30,58,0.1);
+}
+.form-input::placeholder { color: rgba(154,112,112,0.45); font-size: 0.75rem; letter-spacing: 2.5px; }
+.form-input option { background: #0a0000; }
+textarea.form-input { resize: none; }
+.form-submit {
+  width: 100%; padding: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem; letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--bone); background: transparent;
+  border: 1px solid var(--crimson);
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: color 0.4s ease; margin-top: 6px;
+}
+.form-submit::before {
+  content: ''; position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, var(--blood), var(--crimson));
+  transition: left 0.4s ease; z-index: -1;
+}
+.form-submit:hover { color: #fff; }
+.form-submit:hover::before { left: 0; }
+
+/* FOOTER */
+footer {
+  background: rgba(2,0,0,0.97);
+  border-top: 1px solid rgba(139,0,0,0.25);
+  padding: 64px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2rem; font-weight: 900;
+  color: var(--crimson); letter-spacing: 5px;
+  filter: drop-shadow(0 0 12px rgba(196,30,58,0.3));
+}
+.footer-info p {
+  font-size: 0.75rem; color: var(--ash);
+  letter-spacing: 2px; line-height: 2.2; text-align: center;
+  direction: rtl;
+}
+.footer-copy {
+  font-size: 0.58rem; color: rgba(154,112,112,0.3);
+  letter-spacing: 3px; text-align: center; margin-top: 8px;
+  direction: ltr;
+}
+.footer-socials { display: flex; gap: 28px; }
+.soc {
+  font-family: 'Cinzel', serif; font-size: 0.62rem;
+  letter-spacing: 3px; color: var(--ash); text-decoration: none;
+  text-transform: uppercase; transition: color 0.3s ease;
+}
+.soc:hover { color: var(--crimson); }
+
+/* REVEAL ANIMATION */
+.reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.9s ease, transform 0.9s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.15s; }
+.reveal-delay-2 { transition-delay: 0.3s; }
+.reveal-delay-3 { transition-delay: 0.45s; }
+.reveal-delay-4 { transition-delay: 0.6s; }
+.reveal-delay-5 { transition-delay: 0.75s; }
+.reveal-delay-6 { transition-delay: 0.9s; }
+
+/* KEYFRAMES */
+@keyframes riseUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes scrollPulse {
+  0%,100% { opacity: 0.2; transform: scaleY(0.8); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  nav, nav.scrolled { padding: 18px 24px; }
+  .nav-links { display: none; }
+  .inner { padding: 72px 24px; }
+  .menu-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; }
+  .about-visual { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+  footer { padding: 44px 24px; flex-direction: column; align-items: center; text-align: center; }
+  .footer-info p { text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="webgl"></canvas>
+
+<div class="site">
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">BLOODY</a>
+    <ul class="nav-links">
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#about">Story</a></li>
+      <li><a href="#reservation">Reserve</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <p class="hero-eyebrow">Est. 2024 &nbsp;·&nbsp; Tehran</p>
+    <h1 class="hero-title">BLOODY</h1>
+    <p class="hero-sub">CAFE &amp; BAR</p>
+    <div class="hero-line"></div>
+    <p class="hero-tagline">where dark meets divine — a sensory experience beyond the ordinary</p>
+    <div class="hero-cta">
+      <a href="#menu" class="btn btn-primary">Explore Menu</a>
+      <a href="#reservation" class="btn btn-ghost">Reserve a Table →</a>
+    </div>
+    <div class="scroll-cue">
+      <div class="scroll-cue-bar"></div>
+      <span>scroll</span>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section id="menu" class="section-glass">
+    <div class="inner">
+      <div class="menu-header reveal">
+        <span class="section-label">Our Signature</span>
+        <h2 class="section-title">The Dark Menu</h2>
+        <div class="rule"></div>
+        <p>هر نوشیدنی با وسواس ساخته شده. هر سیپ یک تجربه. به سمت تاریک‌ترین قهوه‌های دنیا خوش آمدید.</p>
+      </div>
+      <div class="menu-grid">
+        <div class="menu-card reveal reveal-delay-1">
+          <span class="menu-icon">☕</span>
+          <span class="menu-badge">Signature</span>
+          <h3 class="menu-name">Bloody Mary Latte</h3>
+          <p class="menu-desc">اسپرسو دوبل با شیر خامه‌ای، سس گوجه دودی و ادویه‌های مخفی مخصوص ما</p>
+          <div class="menu-price"><span>تومان</span>۸۵,۰۰۰</div>
+        </div>
+        <div class="menu-card reveal reveal-delay-2">
+          <span class="menu-icon">🖤</span>
+          <h3 class="menu-name">Dark Soul Espresso</h3>
+          <p class="menu-desc">اسپرسو تریپل‌شات با تفت عمیق — طعمی که روح را تکان می‌دهد</p>
+          <div class="menu-price"><span>تومان</span>۶۵,۰۰۰</div>
+        </div>
+        <div class="menu-card reveal reveal-delay-3">
+          <span class="menu-icon">🩸</span>
+          <span class="menu-badge">New</span>
+          <h3 class="menu-name">Crimson Cold Brew</h3>
+          <p class="menu-desc">کلدبرو ۲۴ ساعته با شیره انار، دارچین سیلان و یخ دودی</p>
+          <div class="menu-price"><span>تومان</span>۹۵,۰۰۰</div>
+        </div>
+        <div class="menu-card reveal reveal-delay-4">
+          <span class="menu-icon">🌹</span>
+          <h3 class="menu-name">Black Rose Cappuccino</h3>
+          <p class="menu-desc">کاپوچینو با پودر زغال بامبو فعال — هنر لاته روی کف کاملاً مشکی</p>
+          <div class="menu-price"><span>تومان</span>۷۵,۰۰۰</div>
+        </div>
+        <div class="menu-card reveal reveal-delay-5">
+          <span class="menu-icon">🍷</span>
+          <span class="menu-badge">Popular</span>
+          <h3 class="menu-name">Scarlet Affogato</h3>
+          <p class="menu-desc">بستنی وانیل فرانسوی با اسپرسو داغ و کولی‌کوپای توت فرنگی تاریک</p>
+          <div class="menu-price"><span>تومان</span>۱۱۰,۰۰۰</div>
+        </div>
+        <div class="menu-card reveal reveal-delay-6">
+          <span class="menu-icon">🌙</span>
+          <h3 class="menu-name">Midnight Americano</h3>
+          <p class="menu-desc">آمریکانو تیره با یخ دست‌ساز، قطره‌ای کارامل نمکی و خاکستر نارگیل</p>
+          <div class="menu-price"><span>تومان</span>۵۵,۰۰۰</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="inner">
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <span class="section-label">Our Story</span>
+          <h2 class="section-title">Born from<br>Darkness</h2>
+          <div class="rule"></div>
+          <p>Bloody نه صرفاً یک کافه، بلکه یک تجربه است. جایی که هر لحظه، هر سیپ و هر نفس با اتمسفری یگانه آغشته شده.</p>
+          <p>ما به قهوه به‌مثابه هنر نگاه می‌کنیم. هر ترکیب، حاصل ساعت‌ها آزمایش، کشف و عشق به تاریکی خلاقانه است — جایی که بهترین‌ها می‌درخشند.</p>
+          <div class="about-stats">
+            <div class="stat">
+              <span class="stat-num">40+</span>
+              <span class="stat-lbl">Signature Drinks</span>
+            </div>
+            <div class="stat">
+              <span class="stat-num">7</span>
+              <span class="stat-lbl">Head Baristas</span>
+            </div>
+            <div class="stat">
+              <span class="stat-num">∞</span>
+              <span class="stat-lbl">Dark Vibes</span>
+            </div>
+          </div>
+        </div>
+        <div class="about-visual reveal reveal-delay-2">
+          <div class="about-frame">
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+            <div class="about-bg-text">BLOODY</div>
+            <blockquote class="about-quote">
+              تاریکی نه ترس است، بلکه عمق است. جایی که بهترین‌ها می‌درخشند.
+            </blockquote>
+          </div>
+        </div
