@@ -1,572 +1,1846 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BLOODY — CAFE & BAR</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
-<style>
-:root {
-  --void: #030000;
-  --deep: #0d0000;
-  --blood: #8B0000;
-  --crimson: #C41E3A;
-  --scarlet: #FF1A35;
-  --bone: #E8D5C4;
-  --ash: #9A7070;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--void);
-  color: var(--bone);
-  font-family: 'Raleway', sans-serif;
-  overflow-x: hidden;
-  cursor: none;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLOODY — CAFE & BAR</title>
 
-/* CURSOR */
-#cursor {
-  position: fixed; width: 10px; height: 10px;
-  background: var(--scarlet); border-radius: 50%;
-  pointer-events: none; z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: transform 0.15s ease;
-  mix-blend-mode: screen;
-}
-#cursor-ring {
-  position: fixed; width: 32px; height: 32px;
-  border: 1px solid rgba(196, 30, 58, 0.5);
-  border-radius: 50%; pointer-events: none; z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: left 0.12s ease, top 0.12s ease, transform 0.2s ease;
-}
-a:hover ~ #cursor, button:hover ~ #cursor { transform: translate(-50%,-50%) scale(2.5); }
+    <!-- Font Awesome from ArvanCloud CDN -->
+    <link rel="stylesheet" href="https://lib.arvancloud.ir/font-awesome/6.4.0/css/all.min.css">
 
-/* CANVAS */
-#webgl {
-  position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%; z-index: 0;
-}
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-/* CONTENT */
-.site { position: relative; z-index: 10; }
+    <style>
+        :root {
+            --void: #030000;
+            --deep: #0d0000;
+            --blood: #8B0000;
+            --crimson: #C41E3A;
+            --scarlet: #FF1A35;
+            --bone: #E8D5C4;
+            --ash: #9A7070;
+            --card-bg: rgba(8, 0, 0, 0.7);
+            --card-border: rgba(139, 0, 0, 0.1);
+            --card-hover-bg: rgba(18, 0, 0, 0.85);
+            --section-glass-bg: rgba(3, 0, 0, 0.72);
+            --nav-bg: rgba(3, 0, 0, 0.92);
+            --input-bg: rgba(8, 0, 0, 0.65);
+            --input-focus-bg: rgba(20, 0, 0, 0.8);
+            --footer-bg: rgba(2, 0, 0, 0.97);
+            --text-primary: var(--bone);
+            --text-secondary: var(--ash);
+            --text-muted: rgba(154, 112, 112, 0.45);
+            --modal-bg: rgba(8, 0, 0, 0.98);
+            --modal-overlay: rgba(0, 0, 0, 0.85);
+            --shadow-glow: 0 20px 60px rgba(139, 0, 0, 0.15);
+            --border-subtle: rgba(139, 0, 0, 0.2);
+            --stat-border: rgba(139, 0, 0, 0.15);
+            --toggle-bg: rgba(139, 0, 0, 0.25);
+            --canvas-opacity: 1;
+            --bg-watermark: rgba(139, 0, 0, 0.06);
+            --quote-mark: rgba(196, 30, 58, 0.12);
+        }
 
-/* NAV */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  padding: 22px 64px;
-  display: flex; justify-content: space-between; align-items: center;
-  transition: all 0.5s ease;
-}
-nav.scrolled {
-  background: rgba(3,0,0,0.92);
-  backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(139,0,0,0.35);
-  padding: 14px 64px;
-}
-.nav-logo {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 1.7rem; font-weight: 900;
-  color: var(--crimson); letter-spacing: 5px;
-  text-decoration: none;
-  text-shadow: 0 0 30px rgba(196,30,58,0.5);
-  filter: drop-shadow(0 0 8px rgba(196,30,58,0.3));
-}
-.nav-links { display: flex; gap: 44px; list-style: none; }
-.nav-links a {
-  font-family: 'Cinzel', serif; font-size: 0.68rem;
-  letter-spacing: 3.5px; color: var(--bone); opacity: 0.65;
-  text-decoration: none; text-transform: uppercase;
-  transition: all 0.3s ease; position: relative;
-}
-.nav-links a::after {
-  content: ''; position: absolute; bottom: -5px; left: 0; right: 0;
-  height: 1px; background: var(--crimson);
-  transform: scaleX(0); transform-origin: center;
-  transition: transform 0.35s ease;
-}
-.nav-links a:hover { opacity: 1; color: #fff; }
-.nav-links a:hover::after { transform: scaleX(1); }
+        .light-mode {
+            --void: #f9f6f1;
+            --deep: #ede6db;
+            --blood: #9B1B30;
+            --crimson: #B22234;
+            --scarlet: #D42A3B;
+            --bone: #1a1a1a;
+            --ash: #5c4040;
+            --card-bg: rgba(255, 255, 255, 0.82);
+            --card-border: rgba(180, 140, 140, 0.25);
+            --card-hover-bg: rgba(255, 255, 255, 0.94);
+            --section-glass-bg: rgba(249, 246, 241, 0.78);
+            --nav-bg: rgba(249, 246, 241, 0.94);
+            --input-bg: rgba(255, 255, 255, 0.75);
+            --input-focus-bg: rgba(255, 255, 255, 0.92);
+            --footer-bg: rgba(245, 240, 235, 0.98);
+            --text-primary: #1a1a1a;
+            --text-secondary: #5c4040;
+            --text-muted: rgba(90, 60, 60, 0.55);
+            --modal-bg: rgba(255, 252, 248, 0.985);
+            --modal-overlay: rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 20px 60px rgba(139, 0, 0, 0.08);
+            --border-subtle: rgba(160, 100, 100, 0.25);
+            --stat-border: rgba(160, 100, 100, 0.18);
+            --toggle-bg: rgba(180, 130, 130, 0.3);
+            --canvas-opacity: 0.25;
+            --bg-watermark: rgba(139, 0, 0, 0.03);
+            --quote-mark: rgba(180, 30, 50, 0.08);
+        }
 
-/* HERO */
-#hero {
-  height: 100vh;
-  display: flex; flex-direction: column;
-  justify-content: center; align-items: center; text-align: center;
-  position: relative;
-}
-.hero-eyebrow {
-  font-family: 'Cinzel', serif; font-size: 0.65rem;
-  letter-spacing: 9px; color: var(--crimson);
-  text-transform: uppercase; margin-bottom: 22px;
-  opacity: 0; animation: riseUp 1s ease 0.6s forwards;
-}
-.hero-title {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: clamp(5rem, 16vw, 15rem);
-  font-weight: 900; line-height: 0.9;
-  background: linear-gradient(150deg, #FF3050 0%, #C41E3A 35%, #8B0000 65%, #3B0000 100%);
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 40px rgba(196,30,58,0.4));
-  opacity: 0; animation: riseUp 1.4s ease 0.9s forwards;
-}
-.hero-sub {
-  font-family: 'Cinzel', serif; font-size: 0.85rem;
-  letter-spacing: 12px; color: var(--ash);
-  text-transform: uppercase; margin-top: 14px;
-  opacity: 0; animation: riseUp 1s ease 1.3s forwards;
-}
-.hero-line {
-  width: 1px; height: 60px; background: linear-gradient(to bottom, transparent, var(--crimson), transparent);
-  margin: 28px auto;
-  opacity: 0; animation: fadeIn 1s ease 1.6s forwards;
-}
-.hero-tagline {
-  font-size: 0.95rem; font-weight: 300; font-style: italic;
-  color: rgba(232,213,196,0.45); letter-spacing: 2px;
-  max-width: 420px; line-height: 2;
-  opacity: 0; animation: riseUp 1s ease 1.8s forwards;
-}
-.hero-cta {
-  margin-top: 46px; display: flex; gap: 20px; align-items: center;
-  opacity: 0; animation: riseUp 1s ease 2.1s forwards;
-}
-.btn {
-  font-family: 'Cinzel', serif; font-size: 0.68rem;
-  letter-spacing: 4px; text-transform: uppercase;
-  padding: 16px 42px; text-decoration: none; cursor: pointer;
-  position: relative; overflow: hidden; border: none; outline: none;
-}
-.btn-primary {
-  color: var(--bone); background: transparent;
-  border: 1px solid var(--crimson);
-  transition: color 0.4s ease;
-}
-.btn-primary::before {
-  content: ''; position: absolute;
-  top: 0; left: -100%; width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, var(--crimson), var(--blood));
-  transition: left 0.4s ease; z-index: -1;
-}
-.btn-primary:hover { color: #fff; }
-.btn-primary:hover::before { left: 0; }
-.btn-ghost {
-  color: rgba(232,213,196,0.4); background: transparent;
-  border: none; transition: color 0.3s ease;
-}
-.btn-ghost:hover { color: var(--bone); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background: var(--void);
+            color: var(--text-primary);
+            font-family: 'Vazirmatn', 'Raleway', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+            transition: background 0.6s ease, color 0.6s ease;
+        }
 
-.scroll-cue {
-  position: absolute; bottom: 36px; left: 50%;
-  transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  opacity: 0; animation: fadeIn 1s ease 2.8s forwards;
-}
-.scroll-cue-bar {
-  width: 1px; height: 52px;
-  background: linear-gradient(to bottom, transparent, var(--crimson));
-  animation: scrollPulse 2.2s ease-in-out infinite;
-}
-.scroll-cue span {
-  font-family: 'Cinzel', serif; font-size: 0.5rem;
-  letter-spacing: 5px; color: var(--crimson); text-transform: uppercase;
-}
+        /* CURSOR */
+        #cursor {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--scarlet);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.15s ease, background 0.4s ease;
+            mix-blend-mode: screen;
+        }
+        .light-mode #cursor {
+            mix-blend-mode: multiply;
+            background: #C41E3A;
+        }
+        #cursor-ring {
+            position: fixed;
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(196, 30, 58, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: left 0.12s ease, top 0.12s ease, transform 0.2s ease, border-color 0.4s ease;
+        }
+        .light-mode #cursor-ring {
+            border-color: rgba(180, 30, 50, 0.55);
+        }
+        a:hover~#cursor,
+        button:hover~#cursor,
+        .menu-cat-card:hover~#cursor,
+        .modal-close:hover~#cursor {
+            transform: translate(-50%, -50%) scale(2.5);
+        }
 
-/* SECTION BASE */
-.section-glass {
-  background: rgba(3,0,0,0.72);
-  backdrop-filter: blur(22px);
-  border-top: 1px solid rgba(139,0,0,0.2);
-  border-bottom: 1px solid rgba(139,0,0,0.2);
-}
-.inner {
-  max-width: 1180px; margin: 0 auto;
-  padding: 110px 64px;
-}
-.section-label {
-  display: block; font-family: 'Cinzel', serif;
-  font-size: 0.6rem; letter-spacing: 9px;
-  color: var(--crimson); text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.section-title {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: clamp(2rem, 5vw, 3.8rem);
-  font-weight: 700; color: var(--bone);
-  line-height: 1.1; margin-bottom: 24px;
-}
-.rule {
-  width: 56px; height: 2px;
-  background: linear-gradient(90deg, var(--crimson), transparent);
-  margin-bottom: 48px;
-}
+        /* CANVAS */
+        #webgl {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: var(--canvas-opacity);
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+        }
 
-/* MENU */
-.menu-header { text-align: center; margin-bottom: 72px; }
-.menu-header .rule { margin: 0 auto 20px; background: linear-gradient(90deg, transparent, var(--crimson), transparent); width: 120px; }
-.menu-header p {
-  color: var(--ash); font-size: 0.9rem; font-weight: 300;
-  letter-spacing: 1.5px; line-height: 1.9; max-width: 480px; margin: 0 auto;
-}
-.menu-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-  background: rgba(139,0,0,0.1);
-}
-.menu-card {
-  background: rgba(8,0,0,0.7);
-  border: 1px solid rgba(139,0,0,0.1);
-  padding: 42px 34px;
-  position: relative; overflow: hidden;
-  transition: all 0.45s ease;
-  cursor: default;
-}
-.menu-card::before {
-  content: ''; position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--crimson), transparent);
-  transform: scaleX(0); transform-origin: center;
-  transition: transform 0.5s ease;
-}
-.menu-card::after {
-  content: ''; position: absolute;
-  bottom: 0; left: 0; right: 0; top: 0;
-  background: linear-gradient(135deg, rgba(196,30,58,0.04), transparent);
-  opacity: 0; transition: opacity 0.4s ease;
-}
-.menu-card:hover {
-  background: rgba(18,0,0,0.85);
-  transform: translateY(-6px);
-  border-color: rgba(196,30,58,0.25);
-  box-shadow: 0 20px 60px rgba(139,0,0,0.15);
-}
-.menu-card:hover::before { transform: scaleX(1); }
-.menu-card:hover::after { opacity: 1; }
-.menu-icon { font-size: 2.2rem; margin-bottom: 22px; display: block; }
-.menu-badge {
-  position: absolute; top: 22px; right: 22px;
-  font-family: 'Cinzel', serif; font-size: 0.5rem;
-  letter-spacing: 2.5px; color: var(--crimson);
-  border: 1px solid rgba(196,30,58,0.5); padding: 4px 10px;
-  text-transform: uppercase;
-}
-.menu-name {
-  font-family: 'Cinzel', serif; font-size: 0.95rem;
-  font-weight: 600; color: var(--bone); letter-spacing: 2px; margin-bottom: 12px;
-}
-.menu-desc {
-  font-size: 0.82rem; font-weight: 300; color: var(--ash);
-  line-height: 1.8; margin-bottom: 24px; direction: rtl; text-align: right;
-}
-.menu-price {
-  font-family: 'Cinzel', serif; font-size: 1.1rem;
-  color: var(--crimson); font-weight: 700; letter-spacing: 1px;
-}
-.menu-price span { font-size: 0.7rem; color: var(--ash); margin-right: 4px; }
+        /* SITE */
+        .site {
+            position: relative;
+            z-index: 10;
+        }
 
-/* ABOUT */
-.about-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 90px; align-items: center;
-}
-.about-text p {
-  font-size: 0.9rem; font-weight: 300;
-  color: rgba(232,213,196,0.7); line-height: 2.1;
-  margin-bottom: 22px; direction: rtl; text-align: right;
-}
-.about-stats {
-  display: grid; grid-template-columns: repeat(3,1fr); gap: 0;
-  margin-top: 52px; padding-top: 40px;
-  border-top: 1px solid rgba(139,0,0,0.2);
-}
-.stat { text-align: center; padding: 10px 0; }
-.stat + .stat { border-left: 1px solid rgba(139,0,0,0.15); }
-.stat-num {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 2.6rem; font-weight: 900; color: var(--crimson); display: block;
-  filter: drop-shadow(0 0 12px rgba(196,30,58,0.3));
-}
-.stat-lbl {
-  font-size: 0.6rem; letter-spacing: 3.5px;
-  color: var(--ash); text-transform: uppercase;
-  display: block; margin-top: 6px;
-}
-.about-visual {
-  height: 520px; position: relative;
-  display: flex; align-items: center; justify-content: center;
-}
-.about-frame {
-  width: 100%; height: 100%;
-  border: 1px solid rgba(196,30,58,0.15);
-  position: relative; display: flex;
-  align-items: center; justify-content: center;
-  overflow: hidden;
-}
-.corner {
-  position: absolute; width: 44px; height: 44px;
-  border-color: var(--crimson); border-style: solid;
-}
-.corner.tl { top: 18px; left: 18px; border-width: 2px 0 0 2px; }
-.corner.tr { top: 18px; right: 18px; border-width: 2px 2px 0 0; }
-.corner.bl { bottom: 18px; left: 18px; border-width: 0 0 2px 2px; }
-.corner.br { bottom: 18px; right: 18px; border-width: 0 2px 2px 0; }
-.about-bg-text {
-  position: absolute; font-family: 'Cinzel Decorative', serif;
-  font-size: 7rem; font-weight: 900;
-  color: rgba(139,0,0,0.06); line-height: 1;
-  user-select: none; text-align: center;
-  white-space: nowrap;
-}
-.about-quote {
-  font-size: 1.05rem; font-weight: 300; font-style: italic;
-  color: rgba(232,213,196,0.6); line-height: 1.9;
-  text-align: center; max-width: 280px; position: relative; z-index: 1;
-  padding: 30px 30px 30px 36px;
-  border-left: 2px solid var(--crimson);
-  direction: rtl; text-align: right;
-}
-.about-quote::before {
-  content: '\201C';
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 7rem; color: rgba(196,30,58,0.12);
-  position: absolute; top: -30px; right: -10px;
-  line-height: 1; z-index: -1;
-}
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            padding: 22px 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.5s ease;
+        }
+        nav.scrolled {
+            background: var(--nav-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 14px 64px;
+        }
+        .nav-logo {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: var(--crimson);
+            letter-spacing: 5px;
+            text-decoration: none;
+            text-shadow: 0 0 30px rgba(196, 30, 58, 0.5);
+            filter: drop-shadow(0 0 8px rgba(196, 30, 58, 0.3));
+            transition: color 0.4s ease;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 36px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 44px;
+            list-style: none;
+        }
+        .nav-links a {
+            font-family: 'Cinzel', serif;
+            font-size: 0.68rem;
+            letter-spacing: 3.5px;
+            color: var(--text-primary);
+            opacity: 0.65;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--crimson);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.35s ease;
+        }
+        .nav-links a:hover {
+            opacity: 1;
+            color: var(--text-primary);
+        }
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+        }
 
-/* RESERVATION */
-.res-intro { text-align: center; margin-bottom: 64px; }
-.res-intro .rule { margin: 0 auto; }
-.res-form { max-width: 580px; margin: 0 auto; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.form-field { margin-bottom: 14px; }
-.form-input {
-  width: 100%;
-  background: rgba(8,0,0,0.65);
-  border: 1px solid rgba(139,0,0,0.2);
-  color: var(--bone); padding: 16px 20px;
-  font-family: 'Raleway', sans-serif;
-  font-size: 0.82rem; letter-spacing: 1.5px;
-  outline: none; transition: border-color 0.3s ease, background 0.3s ease;
-  -webkit-appearance: none; appearance: none;
-  border-radius: 0;
-}
-.form-input:focus {
-  border-color: var(--crimson);
-  background: rgba(20,0,0,0.8);
-  box-shadow: 0 0 0 1px rgba(196,30,58,0.1);
-}
-.form-input::placeholder { color: rgba(154,112,112,0.45); font-size: 0.75rem; letter-spacing: 2.5px; }
-.form-input option { background: #0a0000; }
-textarea.form-input { resize: none; }
-.form-submit {
-  width: 100%; padding: 20px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.72rem; letter-spacing: 5px;
-  text-transform: uppercase;
-  color: var(--bone); background: transparent;
-  border: 1px solid var(--crimson);
-  cursor: pointer; position: relative; overflow: hidden;
-  transition: color 0.4s ease; margin-top: 6px;
-}
-.form-submit::before {
-  content: ''; position: absolute;
-  top: 0; left: -100%; width: 100%; height: 100%;
-  background: linear-gradient(90deg, var(--blood), var(--crimson));
-  transition: left 0.4s ease; z-index: -1;
-}
-.form-submit:hover { color: #fff; }
-.form-submit:hover::before { left: 0; }
+        /* THEME TOGGLE */
+        .theme-toggle {
+            background: var(--toggle-bg);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 201;
+            outline: none;
+        }
+        .theme-toggle:hover {
+            border-color: var(--crimson);
+            box-shadow: 0 0 20px rgba(196, 30, 58, 0.25);
+        }
+        .theme-toggle .fa-sun {
+            display: none;
+        }
+        .theme-toggle .fa-moon {
+            display: inline-block;
+        }
+        .light-mode .theme-toggle .fa-sun {
+            display: inline-block;
+        }
+        .light-mode .theme-toggle .fa-moon {
+            display: none;
+        }
 
-/* FOOTER */
-footer {
-  background: rgba(2,0,0,0.97);
-  border-top: 1px solid rgba(139,0,0,0.25);
-  padding: 64px;
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 32px;
-}
-.footer-logo {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 2rem; font-weight: 900;
-  color: var(--crimson); letter-spacing: 5px;
-  filter: drop-shadow(0 0 12px rgba(196,30,58,0.3));
-}
-.footer-info p {
-  font-size: 0.75rem; color: var(--ash);
-  letter-spacing: 2px; line-height: 2.2; text-align: center;
-  direction: rtl;
-}
-.footer-copy {
-  font-size: 0.58rem; color: rgba(154,112,112,0.3);
-  letter-spacing: 3px; text-align: center; margin-top: 8px;
-  direction: ltr;
-}
-.footer-socials { display: flex; gap: 28px; }
-.soc {
-  font-family: 'Cinzel', serif; font-size: 0.62rem;
-  letter-spacing: 3px; color: var(--ash); text-decoration: none;
-  text-transform: uppercase; transition: color 0.3s ease;
-}
-.soc:hover { color: var(--crimson); }
+        /* HERO */
+        #hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .hero-eyebrow {
+            font-family: 'Cinzel', serif;
+            font-size: 0.65rem;
+            letter-spacing: 9px;
+            color: var(--crimson);
+            text-transform: uppercase;
+            margin-bottom: 22px;
+            opacity: 0;
+            animation: riseUp 1s ease 0.6s forwards;
+        }
+        .hero-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(5rem, 16vw, 15rem);
+            font-weight: 900;
+            line-height: 0.9;
+            background: linear-gradient(150deg, #FF3050 0%, #C41E3A 35%, #8B0000 65%, #3B0000 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 40px rgba(196, 30, 58, 0.4));
+            opacity: 0;
+            animation: riseUp 1.4s ease 0.9s forwards;
+        }
+        .hero-sub {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            letter-spacing: 12px;
+            color: var(--ash);
+            text-transform: uppercase;
+            margin-top: 14px;
+            opacity: 0;
+            animation: riseUp 1s ease 1.3s forwards;
+        }
+        .hero-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, transparent, var(--crimson), transparent);
+            margin: 28px auto;
+            opacity: 0;
+            animation: fadeIn 1s ease 1.6s forwards;
+        }
+        .hero-tagline {
+            font-size: 0.95rem;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            letter-spacing: 2px;
+            max-width: 420px;
+            line-height: 2;
+            opacity: 0;
+            animation: riseUp 1s ease 1.8s forwards;
+        }
+        .hero-cta {
+            margin-top: 46px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            opacity: 0;
+            animation: riseUp 1s ease 2.1s forwards;
+        }
+        .btn {
+            font-family: 'Cinzel', serif;
+            font-size: 0.68rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            padding: 16px 42px;
+            text-decoration: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            outline: none;
+            display: inline-block;
+            transition: color 0.4s ease;
+        }
+        .btn-primary {
+            color: var(--text-primary);
+            background: transparent;
+            border: 1px solid var(--crimson);
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--crimson), var(--blood));
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+        .btn-primary:hover {
+            color: #fff;
+        }
+        .btn-primary:hover::before {
+            left: 0;
+        }
+        .btn-ghost {
+            color: var(--text-secondary);
+            opacity: 0.6;
+            background: transparent;
+            border: none;
+            transition: color 0.3s ease, opacity 0.3s ease;
+        }
+        .btn-ghost:hover {
+            color: var(--text-primary);
+            opacity: 1;
+        }
+        .scroll-cue {
+            position: absolute;
+            bottom: 36px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            animation: fadeIn 1s ease 2.8s forwards;
+        }
+        .scroll-cue-bar {
+            width: 1px;
+            height: 52px;
+            background: linear-gradient(to bottom, transparent, var(--crimson));
+            animation: scrollPulse 2.2s ease-in-out infinite;
+        }
+        .scroll-cue span {
+            font-family: 'Cinzel', serif;
+            font-size: 0.5rem;
+            letter-spacing: 5px;
+            color: var(--crimson);
+            text-transform: uppercase;
+        }
 
-/* REVEAL ANIMATION */
-.reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.9s ease, transform 0.9s ease; }
-.reveal.visible { opacity: 1; transform: translateY(0); }
-.reveal-delay-1 { transition-delay: 0.15s; }
-.reveal-delay-2 { transition-delay: 0.3s; }
-.reveal-delay-3 { transition-delay: 0.45s; }
-.reveal-delay-4 { transition-delay: 0.6s; }
-.reveal-delay-5 { transition-delay: 0.75s; }
-.reveal-delay-6 { transition-delay: 0.9s; }
+        /* SECTION BASE */
+        .section-glass {
+            background: var(--section-glass-bg);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background 0.6s ease, border-color 0.6s ease;
+        }
+        .inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 110px 64px;
+        }
+        .section-label {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 0.6rem;
+            letter-spacing: 9px;
+            color: var(--crimson);
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .section-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(2rem, 5vw, 3.8rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+        .rule {
+            width: 56px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--crimson), transparent);
+            margin-bottom: 48px;
+        }
 
-/* KEYFRAMES */
-@keyframes riseUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; } to { opacity: 1; }
-}
-@keyframes scrollPulse {
-  0%,100% { opacity: 0.2; transform: scaleY(0.8); }
-  50% { opacity: 1; transform: scaleY(1.2); }
-}
+        /* MENU CATEGORIES */
+        .menu-header {
+            text-align: center;
+            margin-bottom: 72px;
+        }
+        .menu-header .rule {
+            margin: 0 auto 20px;
+            background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+            width: 120px;
+        }
+        .menu-header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 1.5px;
+            line-height: 1.9;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .menu-cat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .menu-cat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 48px 28px 36px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.45s ease;
+            border-radius: 2px;
+        }
+        .menu-cat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.5s ease;
+        }
+        .menu-cat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            background: linear-gradient(135deg, rgba(196, 30, 58, 0.04), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .menu-cat-card:hover {
+            background: var(--card-hover-bg);
+            transform: translateY(-8px);
+            border-color: rgba(196, 30, 58, 0.35);
+            box-shadow: var(--shadow-glow);
+        }
+        .menu-cat-card:hover::before {
+            transform: scaleX(1);
+        }
+        .menu-cat-card:hover::after {
+            opacity: 1;
+        }
+        .menu-cat-icon {
+            font-size: 2.8rem;
+            color: var(--crimson);
+            margin-bottom: 20px;
+            display: block;
+            transition: transform 0.4s ease, filter 0.4s ease;
+        }
+        .menu-cat-card:hover .menu-cat-icon {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 16px rgba(196, 30, 58, 0.4));
+        }
+        .menu-cat-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        .menu-cat-desc {
+            font-size: 0.78rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .menu-cat-arrow {
+            font-family: 'Cinzel', serif;
+            font-size: 0.58rem;
+            letter-spacing: 4px;
+            color: var(--crimson);
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.35s ease;
+        }
+        .menu-cat-card:hover .menu-cat-arrow {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-/* MOBILE */
-@media (max-width: 768px) {
-  nav, nav.scrolled { padding: 18px 24px; }
-  .nav-links { display: none; }
-  .inner { padding: 72px 24px; }
-  .menu-grid { grid-template-columns: 1fr; }
-  .about-grid { grid-template-columns: 1fr; }
-  .about-visual { display: none; }
-  .form-row { grid-template-columns: 1fr; }
-  footer { padding: 44px 24px; flex-direction: column; align-items: center; text-align: center; }
-  .footer-info p { text-align: center; }
-}
-</style>
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-content {
+            background: var(--modal-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            width: 90%;
+            max-width: 620px;
+            max-height: 82vh;
+            overflow-y: auto;
+            padding: 48px 40px 40px;
+            position: relative;
+            transform: translateY(30px);
+            transition: transform 0.4s ease;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .modal-close:hover {
+            border-color: var(--crimson);
+            color: var(--crimson);
+            box-shadow: 0 0 18px rgba(196, 30, 58, 0.3);
+        }
+        .modal-header {
+            text-align: center;
+            margin-bottom: 36px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .modal-header-icon {
+            font-size: 2.4rem;
+            color: var(--crimson);
+            margin-bottom: 12px;
+            display: block;
+        }
+        .modal-header h3 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 3px;
+        }
+        .modal-header .rule {
+            margin: 14px auto 0;
+            background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+            width: 80px;
+        }
+        .modal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.08);
+            gap: 16px;
+            transition: background 0.3s ease;
+        }
+        .light-mode .modal-item {
+            border-bottom-color: rgba(160, 120, 120, 0.12);
+        }
+        .modal-item:last-child {
+            border-bottom: none;
+        }
+        .modal-item-info {
+            flex: 1;
+        }
+        .modal-item-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+        .modal-item-desc {
+            font-size: 0.78rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .modal-item-price {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--crimson);
+            white-space: nowrap;
+            letter-spacing: 1px;
+            padding-top: 2px;
+        }
+        .modal-item-price small {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-left: 3px;
+            letter-spacing: 0;
+        }
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--crimson);
+            border-radius: 4px;
+        }
+
+        /* ABOUT */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 90px;
+            align-items: center;
+        }
+        .about-text p {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            opacity: 0.85;
+            line-height: 2.1;
+            margin-bottom: 22px;
+        }
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            margin-top: 52px;
+            padding-top: 40px;
+            border-top: 1px solid var(--stat-border);
+        }
+        .stat {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .stat+.stat {
+            border-right: 1px solid var(--stat-border);
+        }
+        .stat-num {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.6rem;
+            font-weight: 900;
+            color: var(--crimson);
+            display: block;
+            filter: drop-shadow(0 0 12px rgba(196, 30, 58, 0.3));
+        }
+        .stat-lbl {
+            font-size: 0.6rem;
+            letter-spacing: 3.5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            display: block;
+            margin-top: 6px;
+        }
+        .about-visual {
+            height: 520px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .about-frame {
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(196, 30, 58, 0.15);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: border-color 0.5s ease;
+        }
+        .corner {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            border-color: var(--crimson);
+            border-style: solid;
+            transition: border-color 0.5s ease;
+        }
+        .corner.tl {
+            top: 18px;
+            left: 18px;
+            border-width: 2px 0 0 2px;
+        }
+        .corner.tr {
+            top: 18px;
+            right: 18px;
+            border-width: 2px 2px 0 0;
+        }
+        .corner.bl {
+            bottom: 18px;
+            left: 18px;
+            border-width: 0 0 2px 2px;
+        }
+        .corner.br {
+            bottom: 18px;
+            right: 18px;
+            border-width: 0 2px 2px 0;
+        }
+        .about-bg-text {
+            position: absolute;
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 7rem;
+            font-weight: 900;
+            color: var(--bg-watermark);
+            line-height: 1;
+            user-select: none;
+            text-align: center;
+            white-space: nowrap;
+            transition: color 0.5s ease;
+        }
+        .about-quote {
+            font-size: 1.05rem;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--text-secondary);
+            opacity: 0.75;
+            line-height: 1.9;
+            text-align: right;
+            max-width: 280px;
+            position: relative;
+            z-index: 1;
+            padding: 30px 36px 30px 30px;
+            border-right: 2px solid var(--crimson);
+        }
+        .about-quote::before {
+            content: '\201C';
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 7rem;
+            color: var(--quote-mark);
+            position: absolute;
+            top: -30px;
+            right: -10px;
+            line-height: 1;
+            z-index: -1;
+            transition: color 0.5s ease;
+        }
+
+        /* LOCATION */
+        #location .inner {
+            text-align: center;
+        }
+        .location-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 52px 40px;
+            max-width: 650px;
+            margin: 0 auto;
+            border-radius: 2px;
+            transition: all 0.5s ease;
+        }
+        .location-icon {
+            font-size: 2.6rem;
+            color: var(--crimson);
+            margin-bottom: 16px;
+            display: block;
+        }
+        .location-address {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            line-height: 2;
+        }
+        .location-detail {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            line-height: 2.2;
+            margin-top: 8px;
+        }
+        .location-meta {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+        .location-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+        .location-meta-item i {
+            color: var(--crimson);
+            font-size: 1rem;
+        }
+
+        /* RESERVATION */
+        .res-intro {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+        .res-intro .rule {
+            margin: 0 auto;
+        }
+        .res-form {
+            max-width: 580px;
+            margin: 0 auto;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .form-field {
+            margin-bottom: 14px;
+        }
+        .form-input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 16px 20px;
+            font-family: 'Vazirmatn', 'Raleway', sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 1.5px;
+            outline: none;
+            transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 0;
+        }
+        .form-input:focus {
+            border-color: var(--crimson);
+            background: var(--input-focus-bg);
+            box-shadow: 0 0 0 1px rgba(196, 30, 58, 0.1);
+        }
+        .form-input::placeholder {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 2.5px;
+        }
+        .form-input option {
+            background: #0a0000;
+            color: #E8D5C4;
+        }
+        .light-mode .form-input option {
+            background: #fff;
+            color: #1a1a1a;
+        }
+        textarea.form-input {
+            resize: none;
+        }
+        .form-submit {
+            width: 100%;
+            padding: 20px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.72rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            background: transparent;
+            border: 1px solid var(--crimson);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: color 0.4s ease;
+            margin-top: 6px;
+        }
+        .form-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--blood), var(--crimson));
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+        .form-submit:hover {
+            color: #fff;
+        }
+        .form-submit:hover::before {
+            left: 0;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--footer-bg);
+            border-top: 1px solid var(--border-subtle);
+            padding: 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 32px;
+            transition: background 0.6s ease, border-color 0.6s ease;
+        }
+        .footer-logo {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--crimson);
+            letter-spacing: 5px;
+            filter: drop-shadow(0 0 12px rgba(196, 30, 58, 0.3));
+        }
+        .footer-info p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            line-height: 2.2;
+            text-align: center;
+        }
+        .footer-copy {
+            font-size: 0.58rem;
+            color: var(--text-muted);
+            letter-spacing: 3px;
+            text-align: center;
+            margin-top: 8px;
+            direction: ltr;
+        }
+        .footer-socials {
+            display: flex;
+            gap: 28px;
+        }
+        .soc {
+            font-family: 'Cinzel', serif;
+            font-size: 0.62rem;
+            letter-spacing: 3px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+        .soc:hover {
+            color: var(--crimson);
+        }
+
+        /* REVEAL */
+        .reveal {
+            opacity: 0;
+            transform: translateY(36px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 {
+            transition-delay: 0.15s;
+        }
+        .reveal-delay-2 {
+            transition-delay: 0.3s;
+        }
+        .reveal-delay-3 {
+            transition-delay: 0.45s;
+        }
+        .reveal-delay-4 {
+            transition-delay: 0.6s;
+        }
+        .reveal-delay-5 {
+            transition-delay: 0.75s;
+        }
+        .reveal-delay-6 {
+            transition-delay: 0.9s;
+        }
+
+        /* KEYFRAMES */
+        @keyframes riseUp {
+            from {
+                opacity: 0;
+                transform: translateY(28px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes scrollPulse {
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scaleY(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scaleY(1.2);
+            }
+        }
+
+        /* MOBILE */
+        @media (max-width: 968px) {
+            .menu-cat-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+            .about-visual {
+                height: 380px;
+            }
+        }
+        @media (max-width: 768px) {
+            nav,
+            nav.scrolled {
+                padding: 18px 20px;
+            }
+            .nav-links {
+                display: none;
+            }
+            .nav-right {
+                gap: 16px;
+            }
+            .inner {
+                padding: 72px 20px;
+            }
+            .menu-cat-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .menu-cat-card {
+                padding: 32px 16px 24px;
+            }
+            .menu-cat-icon {
+                font-size: 2rem;
+            }
+            .menu-cat-name {
+                font-size: 0.8rem;
+                letter-spacing: 1px;
+            }
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+            .about-visual {
+                display: none;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            footer {
+                padding: 44px 20px;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .footer-info p {
+                text-align: center;
+            }
+            .modal-content {
+                padding: 36px 20px 28px;
+                max-height: 88vh;
+                width: 95%;
+            }
+            .modal-header h3 {
+                font-size: 1.3rem;
+            }
+            .location-meta {
+                gap: 20px;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        @media (max-width: 420px) {
+            .menu-cat-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .menu-cat-card {
+                padding: 28px 20px 20px;
+            }
+            .hero-cta {
+                flex-direction: column;
+                gap: 14px;
+            }
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            .modal-content {
+                padding: 28px 14px 22px;
+            }
+            .modal-item {
+                flex-direction: column;
+                gap: 6px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-<canvas id="webgl"></canvas>
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+    <canvas id="webgl"></canvas>
 
-<div class="site">
+    <div class="site">
 
-  <!-- NAV -->
-  <nav id="nav">
-    <a href="#" class="nav-logo">BLOODY</a>
-    <ul class="nav-links">
-      <li><a href="#menu">Menu</a></li>
-      <li><a href="#about">Story</a></li>
-      <li><a href="#reservation">Reserve</a></li>
-    </ul>
-  </nav>
-
-  <!-- HERO -->
-  <section id="hero">
-    <p class="hero-eyebrow">Est. 2024 &nbsp;·&nbsp; Tehran</p>
-    <h1 class="hero-title">BLOODY</h1>
-    <p class="hero-sub">CAFE &amp; BAR</p>
-    <div class="hero-line"></div>
-    <p class="hero-tagline">where dark meets divine — a sensory experience beyond the ordinary</p>
-    <div class="hero-cta">
-      <a href="#menu" class="btn btn-primary">Explore Menu</a>
-      <a href="#reservation" class="btn btn-ghost">Reserve a Table →</a>
-    </div>
-    <div class="scroll-cue">
-      <div class="scroll-cue-bar"></div>
-      <span>scroll</span>
-    </div>
-  </section>
-
-  <!-- MENU -->
-  <section id="menu" class="section-glass">
-    <div class="inner">
-      <div class="menu-header reveal">
-        <span class="section-label">Our Signature</span>
-        <h2 class="section-title">The Dark Menu</h2>
-        <div class="rule"></div>
-        <p>هر نوشیدنی با وسواس ساخته شده. هر سیپ یک تجربه. به سمت تاریک‌ترین قهوه‌های دنیا خوش آمدید.</p>
-      </div>
-      <div class="menu-grid">
-        <div class="menu-card reveal reveal-delay-1">
-          <span class="menu-icon">☕</span>
-          <span class="menu-badge">Signature</span>
-          <h3 class="menu-name">Bloody Mary Latte</h3>
-          <p class="menu-desc">اسپرسو دوبل با شیر خامه‌ای، سس گوجه دودی و ادویه‌های مخفی مخصوص ما</p>
-          <div class="menu-price"><span>تومان</span>۸۵,۰۰۰</div>
-        </div>
-        <div class="menu-card reveal reveal-delay-2">
-          <span class="menu-icon">🖤</span>
-          <h3 class="menu-name">Dark Soul Espresso</h3>
-          <p class="menu-desc">اسپرسو تریپل‌شات با تفت عمیق — طعمی که روح را تکان می‌دهد</p>
-          <div class="menu-price"><span>تومان</span>۶۵,۰۰۰</div>
-        </div>
-        <div class="menu-card reveal reveal-delay-3">
-          <span class="menu-icon">🩸</span>
-          <span class="menu-badge">New</span>
-          <h3 class="menu-name">Crimson Cold Brew</h3>
-          <p class="menu-desc">کلدبرو ۲۴ ساعته با شیره انار، دارچین سیلان و یخ دودی</p>
-          <div class="menu-price"><span>تومان</span>۹۵,۰۰۰</div>
-        </div>
-        <div class="menu-card reveal reveal-delay-4">
-          <span class="menu-icon">🌹</span>
-          <h3 class="menu-name">Black Rose Cappuccino</h3>
-          <p class="menu-desc">کاپوچینو با پودر زغال بامبو فعال — هنر لاته روی کف کاملاً مشکی</p>
-          <div class="menu-price"><span>تومان</span>۷۵,۰۰۰</div>
-        </div>
-        <div class="menu-card reveal reveal-delay-5">
-          <span class="menu-icon">🍷</span>
-          <span class="menu-badge">Popular</span>
-          <h3 class="menu-name">Scarlet Affogato</h3>
-          <p class="menu-desc">بستنی وانیل فرانسوی با اسپرسو داغ و کولی‌کوپای توت فرنگی تاریک</p>
-          <div class="menu-price"><span>تومان</span>۱۱۰,۰۰۰</div>
-        </div>
-        <div class="menu-card reveal reveal-delay-6">
-          <span class="menu-icon">🌙</span>
-          <h3 class="menu-name">Midnight Americano</h3>
-          <p class="menu-desc">آمریکانو تیره با یخ دست‌ساز، قطره‌ای کارامل نمکی و خاکستر نارگیل</p>
-          <div class="menu-price"><span>تومان</span>۵۵,۰۰۰</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ABOUT -->
-  <section id="about">
-    <div class="inner">
-      <div class="about-grid">
-        <div class="about-text reveal">
-          <span class="section-label">Our Story</span>
-          <h2 class="section-title">Born from<br>Darkness</h2>
-          <div class="rule"></div>
-          <p>Bloody نه صرفاً یک کافه، بلکه یک تجربه است. جایی که هر لحظه، هر سیپ و هر نفس با اتمسفری یگانه آغشته شده.</p>
-          <p>ما به قهوه به‌مثابه هنر نگاه می‌کنیم. هر ترکیب، حاصل ساعت‌ها آزمایش، کشف و عشق به تاریکی خلاقانه است — جایی که بهترین‌ها می‌درخشند.</p>
-          <div class="about-stats">
-            <div class="stat">
-              <span class="stat-num">40+</span>
-              <span class="stat-lbl">Signature Drinks</span>
+        <!-- NAV -->
+        <nav id="nav">
+            <a href="#" class="nav-logo">BLOODY</a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="#menu">Menu</a></li>
+                    <li><a href="#about">Story</a></li>
+                    <li><a href="#location">Location</a></li>
+                    <li><a href="#reservation">Reserve</a></li>
+                </ul>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle day/night mode">
+                    <i class="fa-solid fa-moon"></i>
+                    <i class="fa-solid fa-sun"></i>
+                </button>
             </div>
-            <div class="stat">
-              <span class="stat-num">7</span>
-              <span class="stat-lbl">Head Baristas</span>
+        </nav>
+
+        <!-- HERO -->
+        <section id="hero">
+            <p class="hero-eyebrow">Est. 2024 &nbsp;&middot;&nbsp; Tehran</p>
+            <h1 class="hero-title">BLOODY</h1>
+            <p class="hero-sub">CAFE &amp; BAR</p>
+            <div class="hero-line"></div>
+            <p class="hero-tagline">where dark meets divine — a sensory experience beyond the ordinary</p>
+            <div class="hero-cta">
+                <a href="#menu" class="btn btn-primary">Explore Menu</a>
+                <a href="#reservation" class="btn btn-ghost">Reserve a Table &rarr;</a>
             </div>
-            <div class="stat">
-              <span class="stat-num">∞</span>
-              <span class="stat-lbl">Dark Vibes</span>
+            <div class="scroll-cue">
+                <div class="scroll-cue-bar"></div>
+                <span>scroll</span>
             </div>
-          </div>
+        </section>
+
+        <!-- MENU CATEGORIES -->
+        <section id="menu" class="section-glass">
+            <div class="inner">
+                <div class="menu-header reveal">
+                    <span class="section-label">Our Signature</span>
+                    <h2 class="section-title">The Dark Menu</h2>
+                    <div class="rule"></div>
+                    <p>هر نوشیدنی و غذا با وسواس ساخته شده. هر سیپ و لقمه یک تجربه. به سمت تاریک‌ترین طعم‌های دنیا خوش آمدید.</p>
+                </div>
+                <div class="menu-cat-grid">
+                    <!-- Fast Food -->
+                    <div class="menu-cat-card reveal reveal-delay-1" data-modal="modal-fastfood">
+                        <span class="menu-cat-icon"><i class="fa-solid fa-burger"></i></span>
+                        <h3 class="menu-cat-name">Fast Food</h3>
+                        <p class="menu-cat-desc">برگرهای خاص، ساندویچ‌های دودی و اسنک‌های خونین</p>
+                        <span class="menu-cat-arrow">View Menu &rarr;</span>
+                    </div>
+                    <!-- Hot Drinks -->
+                    <div class="menu-cat-card reveal reveal-delay-2" data-modal="modal-hotdrinks">
+                        <span class="menu-cat-icon"><i class="fa-solid fa-mug-saucer"></i></span>
+                        <h3 class="menu-cat-name">Hot Drinks</h3>
+                        <p class="menu-cat-desc">نوشیدنی‌های گرم با تفت عمیق و رازهای تاریک</p>
+                        <span class="menu-cat-arrow">View Menu &rarr;</span>
+                    </div>
+                    <!-- Cold Drinks -->
+                    <div class="menu-cat-card reveal reveal-delay-3" data-modal="modal-colddrinks">
+                        <span class="menu-cat-icon"><i class="fa-solid fa-snowflake"></i></span>
+                        <h3 class="menu-cat-name">Cold Drinks</h3>
+                        <p class="menu-cat-desc">خنک‌ترین ترکیب‌ها با یخ دودی و طعم‌های عمیق</p>
+                        <span class="menu-cat-arrow">View Menu &rarr;</span>
+                    </div>
+                    <!-- Ice Cream -->
+                    <div class="menu-cat-card reveal reveal-delay-4" data-modal="modal-icecream">
+                        <span class="menu-cat-icon"><i class="fa-solid fa-ice-cream"></i></span>
+                        <h3 class="menu-cat-name">Ice Cream</h3>
+                        <p class="menu-cat-desc">بستنی‌های دست‌ساز با شکلات تلخ و طعم‌های کمیاب</p>
+                        <span class="menu-cat-arrow">View Menu &rarr;</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT -->
+        <section id="about">
+            <div class="inner">
+                <div class="about-grid">
+                    <div class="about-text reveal">
+                        <span class="section-label">Our Story</span>
+                        <h2 class="section-title">Born from<br>Darkness</h2>
+                        <div class="rule"></div>
+                        <p>Bloody نه صرفاً یک کافه، بلکه یک تجربه است. جایی که هر لحظه، هر سیپ و هر نفس با اتمسفری یگانه آغشته شده.</p>
+                        <p>ما به قهوه و غذا به‌مثابه هنر نگاه می‌کنیم. هر ترکیب، حاصل ساعت‌ها آزمایش، کشف و عشق به تاریکی خلاقانه است — جایی که بهترین‌ها می‌درخشند.</p>
+                        <div class="about-stats">
+                            <div class="stat">
+                                <span class="stat-num">40+</span>
+                                <span class="stat-lbl">Signature Items</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-num">7</span>
+                                <span class="stat-lbl">Head Baristas</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-num">&infin;</span>
+                                <span class="stat-lbl">Dark Vibes</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-visual reveal reveal-delay-2">
+                        <div class="about-frame">
+                            <div class="corner tl"></div>
+                            <div class="corner tr"></div>
+                            <div class="corner bl"></div>
+                            <div class="corner br"></div>
+                            <div class="about-bg-text">BLOODY</div>
+                            <blockquote class="about-quote">
+                                تاریکی نه ترس، بلکه عمق است. جایی که بهترین‌ها می‌درخشند.
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOCATION -->
+        <section id="location" class="section-glass">
+            <div class="inner">
+                <div class="reveal">
+                    <span class="section-label">Find Us</span>
+                    <h2 class="section-title">Our Sanctuary</h2>
+                    <div class="rule" style="margin:0 auto 40px;background:linear-gradient(90deg,transparent,var(--crimson),transparent);width:100px;"></div>
+                </div>
+                <div class="location-card reveal reveal-delay-2">
+                    <span class="location-icon"><i class="fa-solid fa-location-dot"></i></span>
+                    <div class="location-address">
+                        مرودشت، خیابان اصلی<br>
+                        پاساژ الماس، طبقه دوم<br>
+                        Cofe Bloody
+                    </div>
+                    <div class="location-detail">
+                        ورودی از سمت خیابان اصلی &mdash; بالای فروشگاه مرکزی پاساژ الماس
+                    </div>
+                    <div class="location-meta">
+                        <span class="location-meta-item"><i class="fa-solid fa-clock"></i> ۸ صبح تا ۱۲ شب</span>
+                        <span class="location-meta-item"><i class="fa-solid fa-phone"></i> ۰۷۱-XXXX-XXXX</span>
+                        <span class="location-meta-item"><i class="fa-solid fa-calendar-check"></i> همه روزه</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESERVATION -->
+        <section id="reservation">
+            <div class="inner">
+                <div class="res-intro reveal">
+                    <span class="section-label">Join Us</span>
+                    <h2 class="section-title">Reserve a Table</h2>
+                    <div class="rule"></div>
+                </div>
+                <form class="res-form reveal reveal-delay-2" onsubmit="handleReserve(event)">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <input type="text" class="form-input" placeholder="نام کامل" required>
+                        </div>
+                        <div class="form-field">
+                            <input type="tel" class="form-input" placeholder="شماره تماس" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <input type="date" class="form-input" required>
+                        </div>
+                        <div class="form-field">
+                            <input type="time" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <select class="form-input" required>
+                            <option value="" disabled selected>تعداد مهمان‌ها</option>
+                            <option value="1">۱ نفر</option>
+                            <option value="2">۲ نفر</option>
+                            <option value="3">۳ نفر</option>
+                            <option value="4">۴ نفر</option>
+                            <option value="5">۵ نفر</option>
+                            <option value="6">۶+ نفر</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <textarea class="form-input" rows="3" placeholder="یادداشت ویژه (اختیاری)"></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Confirm Reservation</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="footer-logo">BLOODY</div>
+            <div class="footer-info">
+                <p>مرودشت، خیابان اصلی، پاساژ الماس، طبقه دوم</p>
+                <p class="footer-copy">&copy; 2024 Bloody Cafe &amp; Bar. All rights reserved.</p>
+            </div>
+            <div class="footer-socials">
+                <a href="#" class="soc">Instagram</a>
+                <a href="#" class="soc">Telegram</a>
+                <a href="#" class="soc">WhatsApp</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ============ MODALS ============ -->
+
+    <!-- Modal: Fast Food -->
+    <div class="modal-overlay" id="modal-fastfood">
+        <div class="modal-content">
+            <button class="modal-close" data-close="modal-fastfood" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-header">
+                <span class="modal-header-icon"><i class="fa-solid fa-burger"></i></span>
+                <h3>Fast Food</h3>
+                <div class="rule"></div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Bloody Burger</div>
+                    <div class="modal-item-desc">برگر گوشت آنگوس ۲۰۰ گرمی با سس مخصوص بلادی، پنیر چدار دودی، کاراملیز پیاز و بیکن ترد</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۱۴۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Dark Chicken Sandwich</div>
+                    <div class="modal-item-desc">سینه مرغ گریل شده با سس باربیکیو تیره، کاهوی کرانچی، گوجه خشک شده و نان بریوش زغالی</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۱۲۰,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Crimson Wings</div>
+                    <div class="modal-item-desc">بال مرغ سوخاری تند با گلیز بلادی مخصوص، کنجد سیاه و سس بلوچیز خنک</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۹۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Black Fries</div>
+                    <div class="modal-item-desc">سیب‌زمینی ترافل با پودر زغال فعال، پنیر پارمزان کهنه و سس آیولی سیر سیاه</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۶۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Scarlet Hot Dog</div>
+                    <div class="modal-item-desc">هات داگ دودی آلمانی با سس تند کریمسون، پیاز کاراملی، جالاپینو و خردل دیژون</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۸۵,۰۰۰</div>
+            </div>
         </div>
-        <div class="about-visual reveal reveal-delay-2">
-          <div class="about-frame">
-            <div class="corner tl"></div><div class="corner tr"></div>
-            <div class="corner bl"></div><div class="corner br"></div>
-            <div class="about-bg-text">BLOODY</div>
-            <blockquote class="about-quote">
-              تاریکی نه ترس است، بلکه عمق است. جایی که بهترین‌ها می‌درخشند.
-            </blockquote>
-          </div>
-        </div
+    </div>
+
+    <!-- Modal: Hot Drinks -->
+    <div class="modal-overlay" id="modal-hotdrinks">
+        <div class="modal-content">
+            <button class="modal-close" data-close="modal-hotdrinks" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-header">
+                <span class="modal-header-icon"><i class="fa-solid fa-mug-saucer"></i></span>
+                <h3>Hot Drinks</h3>
+                <div class="rule"></div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Bloody Mary Latte</div>
+                    <div class="modal-item-desc">اسپرسو دوبل با شیر خامه‌ای بخارپز، سس گوجه دودی و ادویه‌های مخفی مخصوص بلادی</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۸۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Dark Soul Espresso</div>
+                    <div class="modal-item-desc">اسپرسو تریپل‌شات با تفت عمیق و رست تیره — طعمی که روح را تکان می‌دهد</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۶۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Black Rose Cappuccino</div>
+                    <div class="modal-item-desc">کاپوچینو با پودر زغال بامبو فعال — هنر لاته روی کف کاملاً مشکی با رایحه گل سرخ</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۷۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Midnight Americano</div>
+                    <div class="modal-item-desc">آمریکانو تیره با یخ دست‌ساز، قطره‌ای کارامل نمکی و خاکستر نارگیل — تلخ و پیچیده</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۵۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Scarlet Mocha</div>
+                    <div class="modal-item-desc">موکا با شکلات تلخ بلژیکی ۸۵٪، خامه زده شده دستی و گرد فلفل قرمز ملایم</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۹۰,۰۰۰</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Cold Drinks -->
+    <div class="modal-overlay" id="modal-colddrinks">
+        <div class="modal-content">
+            <button class="modal-close" data-close="modal-colddrinks" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-header">
+                <span class="modal-header-icon"><i class="fa-solid fa-snowflake"></i></span>
+                <h3>Cold Drinks</h3>
+                <div class="rule"></div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Crimson Cold Brew</div>
+                    <div class="modal-item-desc">کلدبرو ۲۴ ساعته با شیره انار تازه، دارچین سیلان، پوست پرتقال و یخ دودی دست‌ساز</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۹۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Bloody Iced Tea</div>
+                    <div class="modal-item-desc">آیس تی مخصوص با هیبیسکوس، توت فرنگی وحشی، لیمو ترش تازه و عسل طبیعی</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۷۰,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Dark Lemonade</div>
+                    <div class="modal-item-desc">لیموناد با زغال فعال، نعناع تازه، آب لیموی تازه فشرده و شیره آگاوه</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۶۰,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Scarlet Frappe</div>
+                    <div class="modal-item-desc">فراپه قهوه با سس کارامل تیره، یخ خرد شده، خامه و گرد کاکائوی هلندی</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۸۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Midnight Shake</div>
+                    <div class="modal-item-desc">شیک شکلات تلخ با بستنی وانیل ماداگاسکار، چیپس شکلات ۷۰٪ و سس گاناش</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۸۰,۰۰۰</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ice Cream -->
+    <div class="modal-overlay" id="modal-icecream">
+        <div class="modal-content">
+            <button class="modal-close" data-close="modal-icecream" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-header">
+                <span class="modal-header-icon"><i class="fa-solid fa-ice-cream"></i></span>
+                <h3>Ice Cream</h3>
+                <div class="rule"></div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Scarlet Affogato</div>
+                    <div class="modal-item-desc">بستنی وانیل فرانسوی با اسپرسو داغ ریخته شده در لحظه و کولی‌کوپای توت فرنگی تاریک</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۱۱۰,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Dark Chocolate Gelato</div>
+                    <div class="modal-item-desc">جلاتو شکلات تلخ بلژیکی ۷۲٪ با گرد کاکائو و تکه‌های شکلات دست‌ساز</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۷۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Bloody Sundae</div>
+                    <div class="modal-item-desc">سانده سه‌لایه با سس توت فرنگی تیره، خامه زده شده، بادام کاراملی و سس شکلات تلخ</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۹۵,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Black Vanilla</div>
+                    <div class="modal-item-desc">بستنی وانیل با نقطه‌های وانیل ماداگاسکار اصل، زغال نارگیل و عسل وحشی</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۶۰,۰۰۰</div>
+            </div>
+            <div class="modal-item">
+                <div class="modal-item-info">
+                    <div class="modal-item-name">Crimson Sorbet</div>
+                    <div class="modal-item-desc">سوربه انار و تمشک تازه با رایحه نعناع، لیمو و گرد فلفل صورتی ملایم</div>
+                </div>
+                <div class="modal-item-price"><small>تومان</small> ۷۰,۰۰۰</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ============ CUSTOM CURSOR ============
+            const cursor = document.getElementById('cursor');
+            const cursorRing = document.getElementById('cursor-ring');
+            let mouseX = 0,
+                mouseY = 0;
+            let ringX = 0,
+                ringY = 0;
+
+            document.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                cursor.style.left = mouseX + 'px';
+                cursor.style.top = mouseY + 'px';
+            });
+
+            function animateRing() {
+                ringX += (mouseX - ringX) * 0.18;
+                ringY += (mouseY - ringY) * 0.18;
+                cursorRing.style.left = ringX + 'px';
+                cursorRing.style.top = ringY + 'px';
+                requestAnimationFrame(animateRing);
+            }
+            animateRing();
+
+            // ============ NAV SCROLL ============
+            const nav = document.getElementById('nav');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 60) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+
+            // ============ REVEAL ON SCROLL ============
+            const reveals = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.18, rootMargin: '0px 0px -40px 0px' });
+
+            reveals.forEach(function(el) {
+                revealObserver.observe(el);
+            });
+
+            // ============ MODAL SYSTEM ============
+            const modalOverlays = document.querySelectorAll('.modal-overlay');
+            const modalTriggers = document.querySelectorAll('[data-modal]');
+            const modalCloseButtons = document.querySelectorAll('[data-close]');
+            let activeModal = null;
+
+            function openModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (!modal) return;
+                // Close any already open modal
+                if (activeModal && activeModal !== modal) {
+                    activeModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                activeModal = modal;
+                // Focus the close button
+                const closeBtn = modal.querySelector('.modal-close');
+                if (closeBtn) setTimeout(function() { closeBtn.focus(); }, 100);
+            }
+
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (!modal) return;
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+                if (activeModal === modal) {
+                    activeModal = null;
+                }
+            }
+
+            function closeAllModals() {
+                modalOverlays.forEach(function(m) {
+                    m.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+                activeModal = null;
+            }
+
+            // Open via category cards
+            modalTriggers.forEach(function(trigger) {
+                trigger.addEventListener('click', function() {
+                    const modalId = this.getAttribute('data-modal');
+                    openModal(modalId);
+                });
+            });
+
+            // Close via close buttons
+            modalCloseButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const modalId = this.getAttribute('data-close');
+                    closeModal(modalId);
+                });
+            });
+
+            // Close on overlay click (outside modal content)
+            modalOverlays.forEach(function(overlay) {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === overlay) {
+                        closeModal(overlay.id);
+                    }
+                });
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && activeModal) {
+                    closeModal(activeModal.id);
+                }
+            });
+
+            // ============ THEME TOGGLE (DAY/NIGHT) ============
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+
+            // Check localStorage for saved preference
+            const savedTheme = localStorage.getItem('bloody-theme');
+            if (savedTheme === 'light') {
+                body.classList.add('light-mode');
+            }
+
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('light-mode');
+                const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+                localStorage.setItem('bloody-theme', currentTheme);
+            });
+
+            // ============ CANVAS BACKGROUND (atmospheric particles) ============
+            const canvas = document.getElementById('webgl');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const particleCount = 70;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            function createParticles() {
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        radius: Math.random() * 1.6 + 0.3,
+                        speedX: (Math.random() - 0.5) * 0.25,
+                        speedY: (Math.random() - 0.5) * 0.25,
+                        opacity: Math.random() * 0.35 + 0.05,
+                        pulse: Math.random() * Math.PI * 2,
+                        pulseSpeed: Math.random() * 0.015 + 0.005,
+                    });
+                }
+            }
+            createParticles();
+            window.addEventListener('resize', function() {
+                resizeCanvas();
+                createParticles();
+            });
+
+            function drawParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const isLight = body.classList.contains('light-mode');
+                const particleColor = isLight ? '180, 40, 50' : '196, 30, 58';
+
+                particles.forEach(function(p) {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    p.pulse += p.pulseSpeed;
+
+                    // Wrap around edges
+                    if (p.x < -10) p.x = canvas.width + 10;
+                    if (p.x > canvas.width + 10) p.x = -10;
+                    if (p.y < -10) p.y = canvas.height + 10;
+                    if (p.y > canvas.height + 10) p.y = -10;
+
+                    const pulseFactor = Math.sin(p.pulse) * 0.4 + 0.6;
+                    const alpha = p.opacity * pulseFactor * (isLight ? 0.5 : 0.8);
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(' + particleColor + ',' + alpha + ')';
+                    ctx.fill();
+
+                    // Soft glow
+                    const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 4);
+                    glow.addColorStop(0, 'rgba(' + particleColor + ',' + alpha * 0.5 + ')');
+                    glow.addColorStop(1, 'rgba(' + particleColor + ',0)');
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius * 4, 0, Math.PI * 2);
+                    ctx.fillStyle = glow;
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawParticles);
+            }
+            drawParticles();
+
+            // ============ RESERVATION FORM HANDLER ============
+            window.handleReserve = function(event) {
+                event.preventDefault();
+                const btn = event.target.querySelector('.form-submit');
+                const originalText = btn.textContent;
+                btn.textContent = 'Reservation Sent!';
+                btn.style.color = '#fff';
+                btn.style.borderColor = '#4CAF50';
+                setTimeout(function() {
+                    btn.textContent = originalText;
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 2500);
+                event.target.reset();
+            };
+
+            // ============ SMOOTH SCROLL FOR NAV LINKS ============
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        e.preventDefault();
+                        const navHeight = nav.offsetHeight + 20;
+                        const targetPosition = target.getBoundingClientRect().top + window
+                            .pageYOffset - navHeight;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth',
+                        });
+                    }
+                });
+            });
+
+            console.log('%c BLOODY CAFE & BAR %c Ready ',
+                'font-family:Cinzel Decorative,serif;font-size:1.4rem;color:#C41E3A;letter-spacing:4px;',
+                'color:#E8D5C4;');
+            console.log('%c Marvdasht, Khiaban Asli, Pasaj Almas, Tabaghe Dovom',
+                'color:#9A7070;font-size:0.75rem;letter-spacing:1px;');
+        })();
+    </script>
+</body>
+</html>
